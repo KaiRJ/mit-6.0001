@@ -5,38 +5,47 @@ total_cost = 1e6
 portion_down_payment = 0.25
 down_payment = total_cost * portion_down_payment
 
-def compute_savings(total_months, monthly_saved, r, semi_annual_raise):
-    current_savings = 0
+def compute_total_savings(total_months, monthly_saved, r, semi_annual_raise):
+    total_savings = 0
     for month in range(total_months):
-        current_savings += current_savings * r/12
-        current_savings += monthly_saved
+        total_savings += total_savings * r/12
+        total_savings += monthly_saved
 
         if month % 6 == 0:
             monthly_saved += monthly_saved * semi_annual_raise
 
-    return current_savings
-
+    return total_savings
 
 annual_salary = float(input("What is your annual salary?: £"))
 monthly_salary = annual_salary / 12
+max_total_savings = compute_total_savings(total_months, monthly_salary, r, semi_annual_raise)
 
-epsilon = 100
-numGuesses = 0
-low = 0.0
-high = 1.0
-portion_saved = (high + low) / 2
-total_saved = compute_savings(total_months, monthly_salary*portion_saved, r, semi_annual_raise)
-while ( abs(total_saved - down_payment) > epsilon ):
-    numGuesses += 1
-    if total_saved > down_payment:
-        high = portion_saved
-    else:
-        low = portion_saved
-    portion_saved = (high + low) / 2
-    total_saved = compute_savings(total_months, monthly_salary*portion_saved, r, semi_annual_raise)
+if (max_total_savings > down_payment): # Possilbe to buy house in 3 years
+    epsilon = 100
+    numGuesses = 0
+    max = 10000
+    min = 0
+    portion_saved = ((max + min) // 2) / 10000
+    print(f"portion_saved = {portion_saved}")
+    while True:
+        numGuesses += 1
+        total_savings = compute_total_savings(total_months, monthly_salary*portion_saved, r, semi_annual_raise)
+        if abs(total_savings - down_payment) < epsilon:
+            break
+        elif total_savings > down_payment:
+            max = int(portion_saved * 10000)
+        else:
+            min = int(portion_saved * 10000)
+        portion_saved = ((max + min) // 2) / 10000
 
-print(f"Best savings rate: {portion_saved}")
-print(f"Steps in bisection search: {numGuesses}")
+    print(f"Best savings rate: {portion_saved}")
+    print(f"Steps in bisection search: {numGuesses}")
+else: # Not possilbe to buy house in 3 years
+    print('It is not possible to pay the down payment in three years.')
+
+
+
+
 
 
 
