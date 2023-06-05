@@ -224,7 +224,22 @@ def match_with_gaps(my_word, other_word):
         False otherwise:
     """
     # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
+    my_word_stripped = my_word.replace("_ ", "_")
+    if len(my_word_stripped) != len(other_word):
+        return False
+    
+    for i in range(len(my_word_stripped)):
+        my_letter = my_word_stripped[i]
+
+        if my_letter == '_': # skip hidden characters
+            continue
+        
+        if (my_letter != other_word[i] or
+            my_word_stripped.count(my_letter) != other_word.count(my_letter)):
+            return False
+        
+    return True
+
 
 
 def show_possible_matches(my_word):
@@ -238,7 +253,16 @@ def show_possible_matches(my_word):
 
     """
     # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
+    msg = ""
+    for other_word in wordlist:
+        if match_with_gaps(my_word, other_word):
+            msg += f"{other_word} "
+
+    if msg == "":
+        print("No matches found")
+    else:
+        print(msg)
+
 
 
 def hangman_with_hints(secret_word):
@@ -269,7 +293,45 @@ def hangman_with_hints(secret_word):
     Follows the other limitations detailed in the problem write-up.
     """
     # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
+    game_data = {
+        "secret_word": secret_word,
+        "guessed_word": get_guessed_word(secret_word, []),
+        "letters_guessed": [],
+        "guesses": 6,
+        "warnings": 3,
+    }
+
+    print("Welcome to the game Hangman!")
+    print(
+        f"I am thinking of a word that is {len(game_data['secret_word'])} letters long."
+    )
+
+    while True:
+        print("-----------")
+        print(f"You have {game_data['guesses']} guesses left.")
+        print(
+            f"Available letters: {get_available_letters(game_data['letters_guessed'])}"
+        )
+
+        guess = str.lower(input("Please guess a letter: "))
+        if guess == '*':
+            show_possible_matches(game_data['guessed_word'])
+            continue
+
+        if is_valid_guess(guess, game_data):
+            make_guess(guess, game_data)
+
+        # Termination code
+        if game_data["guesses"] == 0:
+            print("-----------")
+            print(f"Sorry, you ran out of guesses. The word was {game_data['secret_word']}.")
+            break
+
+        if is_word_guessed(game_data["secret_word"], game_data["letters_guessed"]):
+            print("-----------")
+            print("Congratulations, you won!")
+            print(f"Your total score for this game is: {game_data['guesses'] * len(set(game_data['secret_word']))}")
+            break
 
 
 # When you've completed your hangman_with_hint function, comment the two similar
@@ -286,7 +348,7 @@ if __name__ == "__main__":
 
     secret_word = choose_word(wordlist)
     # secret_word = "else"
-    hangman(secret_word)
+    hangman_with_hints(secret_word)
 
 ###############
 
