@@ -91,8 +91,13 @@ def get_word_score(word, n):
     n: int >= 0
     returns: int >= 0
     """
-    
-    pass  # TO DO... Remove this line when you implement this function
+    first_component = 0
+    for char in word.lower():
+        first_component += SCRABBLE_LETTER_VALUES[char]
+
+    second_component = max(1, 7*len(word) - 3*(n-len(word)))
+
+    return first_component * second_component
 
 #
 # Make sure you understand how this function works and what it does!
@@ -168,7 +173,12 @@ def update_hand(hand, word):
     returns: dictionary (string -> int)
     """
 
-    pass  # TO DO... Remove this line when you implement this function
+    new_hand = {}
+    for char, freq in hand.items():
+        if freq > word.lower().count(char):
+            new_hand[char] = freq - word.count(char)
+
+    return new_hand
 
 #
 # Problem #3: Test word validity
@@ -184,8 +194,16 @@ def is_valid_word(word, hand, word_list):
     word_list: list of lowercase strings
     returns: boolean
     """
-
-    pass  # TO DO... Remove this line when you implement this function
+    lowercase_word = word.lower()
+    if lowercase_word not in word_list:
+        return False
+    
+    # check if word is composed of letters in the hand
+    for char in set(lowercase_word):
+        if lowercase_word.count(char) > hand.get(char,0):
+            return False
+    
+    return True
 
 #
 # Problem #5: Playing a hand
