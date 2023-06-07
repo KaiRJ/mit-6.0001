@@ -116,6 +116,7 @@ def display_hand(hand):
     hand: dictionary (string -> int)
     """
     
+    print("Current Hand:", end=' ')
     for letter in hand.keys():
         for j in range(hand[letter]):
              print(letter, end=' ')      # print all on the same line
@@ -261,10 +262,9 @@ def play_hand(hand, word_list):
     """
     
     total_score = 0
-    while calculate_handlen(hand) > 0:
-        print("Current Hand:", end=' ')
+    while True:
         display_hand(hand)
-        word = input("Enter word, or \"!!\" to indicate that you are finished: ")
+        word = input("Please enter a word or '!!' to indicate you are done: ")
         if word == "!!":
             break
         else:
@@ -276,8 +276,11 @@ def play_hand(hand, word_list):
                 print("That is not a valid word. Please choose another word.")
 
             hand = update_hand(hand, word)
+            if calculate_handlen(hand) < 1:
+                print("\nRan out of letters.")
+                break
     
-    print(f"Total score: {total_score} points")
+    print(f"Total score for this hand: {total_score} points")
     return total_score
 
 #
@@ -355,22 +358,33 @@ def play_game(word_list):
     """
     
     can_substitute = True
-    can_reply = True
+    can_replay = True
 
     total_score = 0
     total_hands = int(input("Enter total number of hands: "))
     for _ in range(total_hands):
         hand = deal_hand(HAND_SIZE)
-        print(hand)
         if can_substitute:
+            display_hand(hand)
+            print()
             if input("Would you like to substitute a letter? ") == 'yes':
                 can_substitute = False
                 letter = input("Which letter would you like to replace: ")
                 hand = substitute_hand(hand, letter)
         print()
-
+        score = play_hand(hand, word_list)
+        print("-------")
         
+        if can_replay:
+            if input("Would you like to replay the hand? ") == 'yes':
+                can_replay = False
+                replay_score = play_hand(deal_hand(HAND_SIZE, word_list))
+                score = max(score, replay_score)
+        
+        total_score += score
 
+    print(f"Total score over all hands: {total_score}")
+        
 
 #
 # Build data structures used for entire session and play game
