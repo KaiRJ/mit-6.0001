@@ -1,3 +1,4 @@
+
 # 6.0001 Problem Set 3
 #
 # The 6.0001 Word Game
@@ -226,7 +227,7 @@ def calculate_handlen(hand):
     returns: integer
     """
     
-    pass  # TO DO... Remove this line when you implement this function
+    return sum(hand.values())
 
 def play_hand(hand, word_list):
 
@@ -259,39 +260,25 @@ def play_hand(hand, word_list):
       
     """
     
-    # BEGIN PSEUDOCODE <-- Remove this comment when you implement this function
-    # Keep track of the total score
+    total_score = 0
+    while calculate_handlen(hand) > 0:
+        print("Current Hand:", end=' ')
+        display_hand(hand)
+        word = input("Enter word, or \"!!\" to indicate that you are finished: ")
+        if word == "!!":
+            break
+        else:
+            if is_valid_word(word, hand, word_list):
+                word_score = get_word_score(word, calculate_handlen(hand))
+                total_score += word_score
+                print(f"\"{word}\" earned {word_score} points. Total: {total_score} points\n")
+            else:
+                print("That is not a valid word. Please choose another word.")
+
+            hand = update_hand(hand, word)
     
-    # As long as there are still letters left in the hand:
-    
-        # Display the hand
-        
-        # Ask user for input
-        
-        # If the input is two exclamation points:
-        
-            # End the game (break out of the loop)
-
-            
-        # Otherwise (the input is not two exclamation points):
-
-            # If the word is valid:
-
-                # Tell the user how many points the word earned,
-                # and the updated total score
-
-            # Otherwise (the word is not valid):
-                # Reject invalid word (print a message)
-                
-            # update the user's hand by removing the letters of their inputted word
-            
-
-    # Game is over (user entered '!!' or ran out of letters),
-    # so tell user the total score
-
-    # Return the total score as result of function
-
-
+    print(f"Total score: {total_score} points")
+    return total_score
 
 #
 # Problem #6: Playing a game
@@ -325,7 +312,15 @@ def substitute_hand(hand, letter):
     returns: dictionary (string -> int)
     """
     
-    pass  # TO DO... Remove this line when you implement this function
+    new_hand = hand.copy()
+    if letter in hand.keys():
+        alphabet = VOWELS + CONSONANTS
+        for char in hand.keys():
+            alphabet = alphabet.replace(char, '')
+
+        new_hand[random.choice(alphabet)] = new_hand.pop(letter)
+
+    return new_hand
        
     
 def play_game(word_list):
@@ -359,8 +354,22 @@ def play_game(word_list):
     word_list: list of lowercase strings
     """
     
-    print("play_game not implemented.") # TO DO... Remove this line when you implement this function
-    
+    can_substitute = True
+    can_reply = True
+
+    total_score = 0
+    total_hands = int(input("Enter total number of hands: "))
+    for _ in range(total_hands):
+        hand = deal_hand(HAND_SIZE)
+        print(hand)
+        if can_substitute:
+            if input("Would you like to substitute a letter? ") == 'yes':
+                can_substitute = False
+                letter = input("Which letter would you like to replace: ")
+                hand = substitute_hand(hand, letter)
+        print()
+
+        
 
 
 #
