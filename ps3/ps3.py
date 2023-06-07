@@ -94,9 +94,9 @@ def get_word_score(word, n):
     """
     first_component = 0
     for char in word.lower():
-        first_component += SCRABBLE_LETTER_VALUES[char]
+        first_component += SCRABBLE_LETTER_VALUES.get(char, 0)
 
-    second_component = max(1, 7*len(word) - 3*(n-len(word)))
+    second_component = max(7*len(word) - 3*(n-len(word)), 1)
 
     return first_component * second_component
 
@@ -200,7 +200,7 @@ def is_valid_word(word, hand, word_list):
     wildcard_location = word.find('*')
 
     # collect all the words that need to be tested
-    if wildcard_location == -1:
+    if wildcard_location == -1: # -1 means no wildcard
         temp_words = [lowercase_word]
     else:
         # puts all wildcard versions into a list
