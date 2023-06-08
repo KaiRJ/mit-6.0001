@@ -31,6 +31,7 @@ def get_permutations(sequence):
         permutations = [sequence]
     else:
         for word in get_permutations(sequence[1:]):
+            # get all combinations of adding first letter back
             for i in range(len(word)+1):
                 new_word = word[:i] + sequence[0] + word[i:]
                 permutations.append(new_word)
