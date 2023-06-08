@@ -3,6 +3,9 @@
 # Collaborators:
 # Time Spent: x:xx
 
+from typing import Sequence
+
+
 def get_permutations(sequence):
     '''
     Enumerate all permutations of a given string
@@ -23,7 +26,37 @@ def get_permutations(sequence):
     a different order than what is listed here.
     '''
 
-    pass #delete this line and replace with your code here
+    permutations = []
+    if len(sequence) <= 1:
+        permutations = [sequence]
+    else:
+        for word in get_permutations(sequence[1:]):
+            for i in range(len(word)+1):
+                new_word = word[:i] + sequence[0] + word[i:]
+                permutations.append(new_word)
+
+    return permutations
+
+def test_get_permutations(sequences):
+    '''
+    Test the get_permutations using a list of sequences and expected outputs.
+
+    :param sequences: a list of typles containing sequences to test and their expected output
+    :type sequences: list[tuple]
+    '''
+    test_number = 1
+    for sequence, expected_output in sequences:
+        print(f"Test case {test_number}")
+        print(f"\tSequence: {sequence}")
+        print(f"\tExpected Output: {expected_output}")
+        actual_output = get_permutations(sequence)
+        print(f"\tActual Output: {actual_output}")
+        if actual_output.sort() == expected_output.sort():
+            print("Test: PASSED\n")
+        else:
+            print("Test: FAILED\n")
+        test_number += 1
+
 
 if __name__ == '__main__':
 #    #EXAMPLE
@@ -35,6 +68,16 @@ if __name__ == '__main__':
 #    # Put three example test cases here (for your sanity, limit your inputs
 #    to be three characters or fewer as you will have n! permutations for a 
 #    sequence of length n)
+
+    sequences = [
+        ('', ['']),
+        ('a', ['a']),
+        ('ab', ['ab', 'ba']),
+        ('abc', ['abc', 'acb', 'bac', 'bca', 'cab', 'cba'])
+    ]
+    test_get_permutations(sequences)
+
+    # get_permutations('ab')
 
     pass #delete this line and replace with your code here
 
