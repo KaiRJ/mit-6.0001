@@ -11,6 +11,7 @@ from project_util import translate_html
 from mtTkinter import *
 from datetime import datetime
 import pytz
+import re
 
 
 #-----------------------------------------------------------------------
@@ -140,7 +141,17 @@ class Trigger(object):
 # PHRASE TRIGGERS
 
 # Problem 2
-# TODO: PhraseTrigger
+class PhraseTrigger(Trigger):
+
+    def __init__(self, phrase):
+        self.phrase = phrase.lower()
+
+    def is_phrase_in(self, text):
+        translation_table = str.maketrans(string.punctuation, " "*len(string.punctuation))
+        translated_text = text.translate(translation_table)
+        stripped_text = " ".join(translated_text.lower().split())
+        phrase_with_boundries = r'\b' + self.phrase + r'\b'
+        return bool( re.search(phrase_with_boundries, stripped_text) )
 
 # Problem 3
 # TODO: TitleTrigger
