@@ -222,14 +222,14 @@ class BeforeTrigger(TimeTrigger):
         """
         Returns True if given news dated before trigger, or False otherwise.
         """
-        return self.pubtime > story.pubdate
+        return self.pubtime > story.get_pubdate().replace(tzinfo=pytz.timezone("EST"))
 
 class AfterTrigger(TimeTrigger): 
     def evaluate(self, story):
         '''
         Returns True if given news dated after trigger, or False otherwise.
         '''
-        return self.pubtime < story.pubdate
+        return self.pubtime < story.get_pubdate().replace(tzinfo=pytz.timezone("EST"))
 
 # COMPOSITE TRIGGERS
 
@@ -319,12 +319,15 @@ def filter_stories(stories, triggerlist):
 
     Returns: a list of only the stories for which a trigger in triggerlist fires.
     """
-    # TODO: Problem 10
-    # This is a placeholder
-    # (we're just returning all the stories, with no filtering)
-    return stories
 
-
+    # return a list of stories that have a True trigger
+    trig_stories = []
+    for story in stories:
+        for trig in triggerlist:
+            if trig.evaluate(story):
+                trig_stories.append(story)
+                break
+    return trig_stories
 
 #======================
 # User-Specified Triggers
@@ -346,11 +349,26 @@ def read_trigger_config(filename):
         if not (len(line) == 0 or line.startswith('//')):
             lines.append(line)
 
-    # TODO: Problem 11
-    # line is the list of lines that you need to parse and for which you need
-    # to build triggers
-
-    print(lines) # for now, print it so you see what it contains!
+    trig_dict = {}
+    trig_list = []
+    for line in lines:
+        trig = line.split(',')
+        if trig[1] == 'TITLE':
+            trig_dict[trig[0]] = TitleTrigger(trig[2])
+        elif trig[1] == 'DESCRIPTION':
+            trig_dict[trig[0]] = DescriptionTrigger(trig[2])
+        elif trig[1] == 'AFTER':
+            trig_dict[trig[0]] = AfterTrigger(trig[2])
+        elif trig[1] == 'BEFORE':
+            trig_dict[trig[0]] = BeforeTrigger(trig[2])
+        elif trig[1] == 'NOT':
+            trig_dict[trig[0]] = NotTrigger(trig[2])
+        elif trig[1] == 'AND':
+            trig_dict[trig[0]] = AndTrigger(trig_dict[trig[2]], trig_dict[trig[3]])
+        elif trig[0] == 'ADD':
+            for x in range(1, len(trig)):
+                trig_list.append(trig_dict[trig[x]])
+    return trig_list
 
 
 
@@ -366,9 +384,7 @@ def main_thread(master):
         t4 = AndTrigger(t2, t3)
         triggerlist = [t1, t4]
 
-        # Problem 11
-        # TODO: After implementing read_trigger_config, uncomment this line 
-        # triggerlist = read_trigger_config('triggers.txt')
+        triggerlist = read_trigger_config('triggers.txt')
         
         # HELPER CODE - you don't need to understand this!
         # Draws the popup window that displays the filtered stories
