@@ -57,7 +57,7 @@ def process(url):
 
 class NewsStory(object):
     '''
-    A class representatino of a news story
+    A class representation of a news story
     '''
 
     def __init__(self, guid, title, description, url, pubdate):
@@ -142,45 +142,170 @@ class Trigger(object):
 
 # Problem 2
 class PhraseTrigger(Trigger):
-
+    '''
+    An abstract class representation of trigger to a phrase
+    '''
+        
     def __init__(self, phrase):
-        self.phrase = phrase.lower()
+        '''
+        Initializes a PhaseTrigger object
+                    
+        phrase (string) : phrase that causes the trigger
+
+        a NewsStory object has 1 attribute:
+            self.phrase (string, determined by input phrase)
+        '''
+        self.phrase = phrase
 
     def is_phrase_in(self, text):
+        '''
+        Checks if the class variable self.phrase is in text.       
+        
+        text (string): sentence to check if self.phrase is in 
+
+        Returns: True if self.phrase is in text, False otherwise
+        '''
         translation_table = str.maketrans(string.punctuation, " "*len(string.punctuation))
         translated_text = text.translate(translation_table)
         stripped_text = " ".join(translated_text.lower().split())
-        phrase_with_boundries = r'\b' + self.phrase + r'\b'
+        phrase_with_boundries = r'\b' + self.phrase.lower() + r'\b'
         return bool( re.search(phrase_with_boundries, stripped_text) )
 
 # Problem 3
-# TODO: TitleTrigger
+class TitleTrigger(PhraseTrigger):
+    '''
+    A class representation of trigger of a news title
+    ''' 
+    def evaluate(self, story):
+        """
+        Returns True if an alert should be generated
+        for the given news title, or False otherwise.
+        """
+        return self.is_phrase_in(story.get_title()) 
 
 # Problem 4
-# TODO: DescriptionTrigger
+class DescriptionTrigger(PhraseTrigger):
+    '''
+    A class representation of trigger of a news description
+    ''' 
+    def evaluate(self, story):
+        """
+        Returns True if an alert should be generated
+        for the given news description, or False otherwise.
+        """
+        return self.is_phrase_in(story.get_description()) 
 
 # TIME TRIGGERS
 
 # Problem 5
-# TODO: TimeTrigger
-# Constructor:
-#        Input: Time has to be in EST and in the format of "%d %b %Y %H:%M:%S".
-#        Convert time from string to a datetime before saving it as an attribute.
+class TimeTrigger(Trigger):
+    '''
+    A class representation of trigger of a news time stamp
+    '''
+    def __init__(self, time_est):
+        '''
+        Initializes a TimeTrigger object
+                    
+        time_est (string) : Time has to be in EST and in the format of "%d %b %Y %H:%M:%S"
+
+        a TimeTrigger object has 1 attribute:
+            self.pubtime (datatime, determined by input time_est)
+        '''
+        time_format = "%d %b %Y %H:%M:%S"
+        pubtime = datetime.strptime(time_est, time_format)
+        pubtime = pubtime.replace(tzinfo=pytz.timezone("EST"))
+        self.pubtime = pubtime
 
 # Problem 6
-# TODO: BeforeTrigger and AfterTrigger
+class BeforeTrigger(TimeTrigger):
+    def evaluate(self, story):
+        """
+        Returns True if given news dated before trigger, or False otherwise.
+        """
+        return self.pubtime > story.pubdate
 
+class AfterTrigger(TimeTrigger): 
+    def evaluate(self, story):
+        '''
+        Returns True if given news dated after trigger, or False otherwise.
+        '''
+        return self.pubtime < story.pubdate
 
 # COMPOSITE TRIGGERS
 
 # Problem 7
-# TODO: NotTrigger
+class NotTrigger(Trigger):
+    '''
+    A class representation of a not trigger
+    '''
+    def __init__(self, T) -> None:
+        '''
+        Initializes a NotTrigger object
+                    
+        T (Trigger) : Trigger object that will be inverted"
+
+        a NotTrigger object has 1 attribute:
+            self.T (Trigger, determined by input T)
+        '''
+        self.trigger = T
+
+    def evaluate(self, story):
+        '''
+        Returns inverse output of another trigger.
+        '''
+        return not self.trigger.evaluate(story)
 
 # Problem 8
-# TODO: AndTrigger
+class AndTrigger(Trigger):
+    '''
+    A class representation of an and trigger
+    '''
+    def __init__(self, T_1, T_2) -> None:
+        '''
+        Initializes an AndTrigger object
+                    
+        T_1 (Trigger) : Trigger object"
+        T_2 (Trigger) : Trigger object"
+
+        an AndTrigger object has 2 attribute:
+            self.T_1 (Trigger, determined by input T)
+            self.T_2 (Trigger, determined by input T)
+        '''
+        self.trigger_1 = T_1
+        self.trigger_2 = T_2
+
+    def evaluate(self, story):
+        '''
+        Returns True if both of the inputted triggers 
+        evalute to True, or False otherwise
+        '''
+        return self.trigger_1.evaluate(story) and self.trigger_2.evaluate(story)
 
 # Problem 9
-# TODO: OrTrigger
+class OrTrigger(Trigger):
+    '''
+    A class representation of an or trigger
+    '''
+    def __init__(self, T_1, T_2) -> None:
+        '''
+        Initializes an OrTrigger object
+                    
+        T_1 (Trigger) : Trigger object"
+        T_2 (Trigger) : Trigger object"
+
+        an OrTrigger object has 2 attribute:
+            self.T_1 (Trigger, determined by input T)
+            self.T_2 (Trigger, determined by input T)
+        '''
+        self.trigger_1 = T_1
+        self.trigger_2 = T_2
+
+    def evaluate(self, story):
+        '''
+        Returns True if either of the inputted triggers 
+        evalute to True, or False otherwise
+        '''
+        return self.trigger_1.evaluate(story) or self.trigger_2.evaluate(story)
 
 
 #======================
