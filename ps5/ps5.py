@@ -54,7 +54,74 @@ def process(url):
 
 # Problem 1
 
-# TODO: NewsStory
+class NewsStory(object):
+    '''
+    A class representatino of a news story
+    '''
+
+    def __init__(self, guid, title, description, url, pubdate):
+        '''
+        Initializes a NewsStory object
+                    
+        guid (string)       : globally unique identifier for this news story
+        title (string)      : the news story's headline
+        description (string): a paragraph summarizing the news story
+        link (string)       : a link to a website with the entire story
+        pubdate (datetime)  : date the news was published
+
+        a NewsStory object has 5 attributes:
+            self.guid (string, determined by input guid)
+            self.title (string, determined by input title)
+            self.description (string, determined by input description)
+            self.link (string, determined by input link)
+            self.pubdate (datetime, determined by input pubdate)
+        '''
+
+        self.guid        = guid
+        self.title       = title
+        self.description = description
+        self.url         = url
+        self.pubdate     = pubdate
+
+    def get_guid(self):
+        '''
+        Used to safely access self.guid outside of the class
+        
+        Returns: self.guid
+        '''
+        return self.guid
+    
+    def get_title(self):
+        '''
+        Used to safely access self.title outside of the class
+        
+        Returns: self.title
+        '''
+        return self.title
+    
+    def get_description(self):
+        '''
+        Used to safely access self.description outside of the class
+        
+        Returns: self.description
+        '''
+        return self.description
+    
+    def get_link(self):
+        '''
+        Used to safely access self.url outside of the class
+        
+        Returns: self.url
+        '''
+        return self.url
+    
+    def get_pubdate(self):
+        '''
+        Used to safely access self.pubdate outside of the class
+        
+        Returns: self.pubdate
+        '''
+        return self.pubdate
 
 
 #======================
@@ -201,7 +268,7 @@ def main_thread(master):
             stories = process("http://news.google.com/news?output=rss")
 
             # Get stories from Yahoo's Top Stories RSS news feed
-            stories.extend(process("http://news.yahoo.com/rss/topstories"))
+            # stories.extend(process("http://news.yahoo.com/rss/topstories"))
 
             stories = filter_stories(stories, triggerlist)
 
