@@ -55,8 +55,24 @@ def greedy_cow_transport(cows,limit=10):
     transported on a particular trip and the overall list containing all the
     trips
     """
-    # TODO: Your code here
-    pass
+    # sort the dict of cows heiviest first
+    cowsSorted = \
+        {name: weight for name, weight in sorted(cows.items(), key=lambda item: item[1], reverse=True)}
+    trips = [[]]
+    trips_weight = [0]
+    for name, weight in cowsSorted.items():
+        # check if cow will fit on a current trip
+        for i in range(len(trips)):
+            if trips_weight[i] + weight <= limit:
+                trips[i].append(name)
+                trips_weight[i] += weight
+                break
+        else: # cow didnt fit on any current trips, try make new one 
+            if weight < limit:
+                trips.append([name])
+                trips_weight.append(weight)
+            
+    return trips        
 
 # Problem 3
 def brute_force_cow_transport(cows,limit=10):
