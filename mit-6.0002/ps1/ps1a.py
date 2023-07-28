@@ -55,12 +55,11 @@ def greedy_cow_transport(cows,limit=10):
     transported on a particular trip and the overall list containing all the
     trips
     """
-    # sort the dict of cows heiviest first
-    cowsSorted = \
-        {name: weight for name, weight in sorted(cows.items(), key=lambda item: item[1], reverse=True)}
+    # create list of tuples, sorted by weight from cows dict.
+    cowsSorted = sorted(cows.items(), key=lambda x: x[1], reverse=True)
     trips = [[]]
     trips_weight = [0]
-    for name, weight in cowsSorted.items():
+    for name, weight in cowsSorted:
         # check if cow will fit on a current trip
         for i in range(len(trips)):
             if trips_weight[i] + weight <= limit:
@@ -71,7 +70,6 @@ def greedy_cow_transport(cows,limit=10):
             if weight < limit:
                 trips.append([name])
                 trips_weight.append(weight)
-            
     return trips        
 
 # Problem 3
@@ -103,12 +101,11 @@ def brute_force_cow_transport(cows,limit=10):
                 trip_weight = 0
                 for cow in trip:
                     trip_weight += cows[cow]
-                print(trip_weight)
                 if trip_weight > limit:
-                    break
+                    break # over the limit therefore skip this trip
             else:
+                # all trips in this partition under limit and fewer trips than current best
                 best_partition = partition
-
     return best_partition
                 
 # Problem 4
@@ -125,5 +122,23 @@ def compare_cow_transport_algorithms():
     Returns:
     Does not return anything.
     """
-    # TODO: Your code here
-    pass
+    cows = load_cows("ps1_cow_data.txt")
+
+    start = time.time()
+    greedy_trips = greedy_cow_transport(cows)
+    end = time.time()
+
+    print("greedy_cow_transport:")
+    print(f"\tTotal trips : {len(greedy_trips)}")
+    print(f"\tTotal time  : {end - start}")
+
+    start = time.time()
+    brute_force_trips = brute_force_cow_transport(cows)
+    end = time.time()
+
+    print("brute_force_cow_transport:")
+    print(f"\tTotal trips : {len(brute_force_trips)}")
+    print(f"\tTotal time  : {end - start}")
+
+if __name__ == '__main__':
+    compare_cow_transport_algorithms()
