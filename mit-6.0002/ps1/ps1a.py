@@ -7,12 +7,16 @@
 from ps1_partition import get_partitions
 import time
 
+import typing
+Cows = dict[str,int]
+Trips = list[list[str]]
+
 #================================
 # Part A: Transporting Space Cows
 #================================
 
 # Problem 1
-def load_cows(filename):
+def load_cows(filename : str) -> Cows:
     """
     Read the contents of the given file.  Assumes the file contents contain
     data in the form of comma-separated cow name, weight pairs, and return a
@@ -25,15 +29,15 @@ def load_cows(filename):
     a dictionary of cow name (string), weight (int) pairs
     """
     cows = {}
-    with open(filename, 'r') as file:
+    with open(filename) as file:
         for line in file:
-            cow = line.split(',')
-            cows[cow[0]] = int(cow[1])
-
+            name, weight  = line.split(',')
+            cows[name] = int(weight)
+            
     return cows
 
 # Problem 2
-def greedy_cow_transport(cows,limit=10):
+def greedy_cow_transport(cows : Cows, limit : int = 10) -> Trips:
     """
     Uses a greedy heuristic to determine an allocation of cows that attempts to
     minimize the number of spaceship trips needed to transport all the cows. The
@@ -56,10 +60,11 @@ def greedy_cow_transport(cows,limit=10):
     trips
     """
     # create list of tuples, sorted by weight from cows dict.
-    cowsSorted = sorted(cows.items(), key=lambda x: x[1], reverse=True)
+    cows_sorted = sorted(cows.items(), key=lambda x: x[1], reverse=True)
     trips = [[]]
     trips_weight = [0]
-    for name, weight in cowsSorted:
+    
+    for name, weight in cows_sorted:
         # check if cow will fit on a current trip
         for i in range(len(trips)):
             if trips_weight[i] + weight <= limit:
@@ -70,10 +75,11 @@ def greedy_cow_transport(cows,limit=10):
             if weight < limit:
                 trips.append([name])
                 trips_weight.append(weight)
+                
     return trips        
 
 # Problem 3
-def brute_force_cow_transport(cows,limit=10):
+def brute_force_cow_transport(cows : Cows,limit : int = 10) -> Trips:
     """
     Finds the allocation of cows that minimizes the number of spaceship trips
     via brute force.  The brute force algorithm should follow the following method:
@@ -109,7 +115,7 @@ def brute_force_cow_transport(cows,limit=10):
     return best_partition
                 
 # Problem 4
-def compare_cow_transport_algorithms():
+def compare_cow_transport_algorithms(filename : str) -> None:
     """
     Using the data from ps1_cow_data.txt and the specified weight limit, run your
     greedy_cow_transport and brute_force_cow_transport functions here. Use the
@@ -129,6 +135,7 @@ def compare_cow_transport_algorithms():
     end = time.time()
 
     print("greedy_cow_transport:")
+    print(f"\tTrips : {greedy_trips}")
     print(f"\tTotal trips : {len(greedy_trips)}")
     print(f"\tTotal time  : {end - start}")
 
@@ -137,8 +144,9 @@ def compare_cow_transport_algorithms():
     end = time.time()
 
     print("brute_force_cow_transport:")
+    print(f"\tTrips : {brute_force_trips}")
     print(f"\tTotal trips : {len(brute_force_trips)}")
     print(f"\tTotal time  : {end - start}")
 
 if __name__ == '__main__':
-    compare_cow_transport_algorithms()
+    compare_cow_transport_algorithms("ps1_cow_data.txt")
