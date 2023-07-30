@@ -65,7 +65,7 @@ def greedy_cow_transport(cows: Cows, limit: int = 10) -> Trips:
     """
     # create list of tuples, sorted by weight from cows dict.
     cows_sorted = sorted(cows.items(), key=lambda x: x[1], reverse=True)
-    trips = [[]]
+    trips: Trips = [[]]
     trips_weight = [0]
 
     for name, weight in cows_sorted:
@@ -108,7 +108,7 @@ def brute_force_cow_transport(cows: Cows, limit: int = 10) -> Trips:
     transported on a particular trip and the overall list containing all the
     trips
     """
-    best_partition = [[]]
+    best_partition: Trips = [[]]
     for partition in ps1.get_partitions(cows):
         if len(partition) < len(best_partition) or best_partition == [[]]:
             for trip in partition:
