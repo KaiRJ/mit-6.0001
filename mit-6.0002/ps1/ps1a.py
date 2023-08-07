@@ -8,9 +8,9 @@ import time
 
 import ps1_partition as ps1
 
-
 Cows = dict[str, int]
 Trips = list[list[str]]
+
 
 # ================================
 # Part A: Transporting Space Cows
